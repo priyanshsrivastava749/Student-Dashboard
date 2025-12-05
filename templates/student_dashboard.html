@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1 style="font-size: 2rem; font-weight: 700;">My Dashboard</h1>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn" style="background: var(--surface); color: var(--text);">Logout</button>
+        </form>
+    </div>
+
+    {% if messages %}
+    <div class="messages" style="margin-bottom: 1rem;">
+        {% for message in messages %}
+        <div class="message-tag" data-tag="{{ message.tags }}"
+            style="padding: 1rem; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; border-radius: 0.5rem; color: #10b981;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="dashboard-grid student-grid-layout">
+        <!-- Assignments List -->
+        <div>
+            <!-- Top Action Bar for Student -->
+            <div style="margin-bottom: 2rem;">
+                <a href="https://actually-fibula-87f.notion.site/Tutor-Dashboard-Raisha-Class-IX-Syllabus-2ae7e689282b80039affd202d3e33c42?pvs=74"
+                    class="card"
+                    style="text-align: center; transition: transform 0.2s; cursor: pointer; display: block; text-decoration: none; color: inherit; background: var(--surface); border: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 0.5rem; color: var(--primary);">View Subjects</h3>
+                    <p style="color: var(--text-muted); margin: 0;">Access your study materials <i
+                            class="fas fa-external-link-alt"></i></p>
+                </a>
+            </div>
+
+            <h2 style="margin-bottom: 1.5rem;">Active Assignments</h2>
+            {% for assignment in assignments %}
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <div>
+                        <span
+                            style="background: var(--primary); color: white; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.5rem; display: inline-block;">
+                            {{ assignment.subject }}
+                        </span>
+                        <h3 style="margin-bottom: 0.25rem;">{{ assignment.title }}</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Due: {{ assignment.due_date|default:"No
+                            Date" }}</p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        {% if assignment.gdrive_link %}
+                        <a href="{{ assignment.gdrive_link }}" class="btn"
+                            style="background: #fbbc04; color: #000; padding: 0.5rem;">
+                            Open Link <i class="fas fa-external-link-alt"></i>
+                        </a>
+                        {% endif %}
+                        {% if assignment.file %}
+                        <a href="{{ assignment.file.url }}" class="btn"
+                            style="background: var(--surface); color: var(--text); padding: 0.5rem;">
+                            Download QP
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <p style="margin-bottom: 1.5rem;">{{ assignment.description }}</p>
+
+                <details>
+                    <summary style="cursor: pointer; color: var(--primary); font-weight: 600;">Submit Work</summary>
+                    <form action="{% url 'submit_homework' %}" method="post" enctype="multipart/form-data"
+                        style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        {% csrf_token %}
+                        <input type="hidden" name="assignment_id" value="{{ assignment.id }}">
+
+                        <!-- Step 1: Upload to Drive -->
+                        <div class="form-group"
+                            style="margin-bottom: 1rem; background: var(--bg); padding: 1rem; border-radius: 0.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Step 1: Upload Your
+                                Work</label>
+                            <a href="https://drive.google.com/drive/u/0/folders/1H8nzhfo_3wsaHaywTn96CXU-JW7zwhm7"
+                                class="btn"
+                                style="background-color: #fbbc04; color: #000; text-decoration: none; display: inline-block; padding: 0.5rem 1rem; border-radius: 0.25rem; font-size: 0.9rem;">
+                                <i class="fab fa-google-drive"></i> Open Homework Folder
+                            </a>
+                            <p
+                                style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 0;">
+                                Upload your file here first.
+                            </p>
+                        </div>
+
+                        <!-- Step 2: Paste Link -->
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label style="font-size: 0.9rem; font-weight: 600;">Step 2: Paste Drive Link</label>
+                            <input type="url" name="gdrive_link" placeholder="https://drive.google.com/..."
+                                style="padding: 0.5rem; width: 100%;">
+                        </div>
+
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </details>
+            </div>
+            {% empty %}
+            <p>No active assignments.</p>
+            {% endfor %}
+        </div>
+
+        <!-- History / Checked Copies -->
+        <div>
+            <h2 style="margin-bottom: 1.5rem;">History & Feedback</h2>
+            <div class="card">
+                {% for sub in my_submissions %}
+                <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem;">
+                        {{ sub.created_at|date:"M d, Y" }}
+                    </div>
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">
+                        {{ sub.assignment.title|default:"General Submission" }}
+                    </div>
+
+                    {% if sub.checked_gdrive_link %}
+                    <div
+                        style="background: rgba(16, 185, 129, 0.1); padding: 0.75rem; border-radius: 0.5rem; border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <a href="{{ sub.checked_gdrive_link }}"
+                            style="color: #10b981; font-weight: 600; text-decoration: none; display: block; margin-bottom: 0.25rem;">
+                            <i class="fas fa-check-circle"></i> View Checked Copy (Drive)
+                        </a>
+                        {% if sub.remarks %}
+                        <p style="font-size: 0.875rem; color: var(--text);">"{{ sub.remarks }}"</p>
+                        {% endif %}
+                    </div>
+                    {% elif sub.checked_file %}
+                    <div
+                        style="background: rgba(16, 185, 129, 0.1); padding: 0.75rem; border-radius: 0.5rem; border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <a href="{{ sub.checked_file.url }}"
+                            style="color: #10b981; font-weight: 600; text-decoration: none; display: block; margin-bottom: 0.25rem;">
+                            <i class="fas fa-check-circle"></i> Download Checked Copy (File)
+                        </a>
+                        {% if sub.remarks %}
+                        <p style="font-size: 0.875rem; color: var(--text);">"{{ sub.remarks }}"</p>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div style="color: var(--text-muted); font-size: 0.875rem;">
+                        <i class="fas fa-clock"></i> Pending correction
+                    </div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <p style="color: var(--text-muted);">No history.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

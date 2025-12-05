@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1 style="font-size: 2rem; font-weight: 700;">Teacher Dashboard</h1>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn" style="background: var(--surface); color: var(--text);">Logout</button>
+        </form>
+    </div>
+
+    <!-- Flash Messages -->
+    {% if messages %}
+    <div class="messages" style="margin-bottom: 1rem;">
+        {% for message in messages %}
+        <div class="message-tag" data-tag="{{ message.tags }}"
+            style="padding: 1rem; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; border-radius: 0.5rem; color: #10b981;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="dashboard-grid">
+        <!-- Left Column: Create & View Assignments -->
+        <div>
+            <!-- Create Assignment Form -->
+            <div class="card" style="margin-bottom: 2rem; border-color: var(--primary);">
+                <h3 style="margin-bottom: 1.5rem;">Create New Assignment</h3>
+                <form action="{% url 'create_assignment' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label>Subject Name</label>
+                        <input type="text" name="subject" required placeholder="e.g., Physics"
+                            style="width: 100%; padding: 0.5rem;">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Topic</label>
+                        <input type="text" name="title" required placeholder="e.g., Thermodynamics"
+                            style="width: 100%; padding: 0.5rem;">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="description" rows="3" required placeholder="Instructions..."
+                            style="width: 100%; padding: 0.5rem;"></textarea>
+                    </div>
+
+                    <!-- Step 1: Upload to Drive -->
+                    <div class="form-group"
+                        style="margin-bottom: 1rem; background: var(--bg); padding: 1rem; border-radius: 0.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Step 1: Upload
+                            Material</label>
+                        <a href="https://drive.google.com/drive/u/0/folders/1lu0q1NuzXedXEYsinBxkJ0BYdOuIW7bY"
+                            class="btn"
+                            style="background-color: #fbbc04; color: #000; text-decoration: none; display: inline-block; padding: 0.5rem 1rem; border-radius: 0.25rem; font-size: 0.9rem;">
+                            <i class="fab fa-google-drive"></i> Open Drive Folder
+                        </a>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 0;">
+                            Upload your file to Drive, verify sharing settings, then copy the link.
+                        </p>
+                    </div>
+
+                    <!-- Step 2: Paste Link -->
+                    <div class="form-group">
+                        <label style="font-weight: 600;">Step 2: Paste Assignment Link</label>
+                        <input type="url" name="gdrive_link" placeholder="https://drive.google.com/..."
+                            style="padding: 0.5rem; width: 100%;">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Due Date</label>
+                        <input type="date" name="due_date" style="padding: 0.5rem;">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Add Task</button>
+                </form>
+            </div>
+
+            <!-- List Created Assignments -->
+            <div class="card">
+                <h3 style="margin-bottom: 1rem;">My Assignments</h3>
+                {% for assignment in assignments %}
+                <div
+                    style="padding: 1rem; background: var(--bg); border-radius: 0.5rem; margin-bottom: 1rem; border-left: 4px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span class="badge-subject"
+                            style="font-size: 0.75rem; background: var(--surface); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">
+                            {{ assignment.subject }}
+                        </span>
+                        <span class="text-muted" style="font-size: 0.875rem; color: var(--text-muted);">
+                            Due: {{ assignment.due_date|date:"M d, Y"|default:"No Date" }}
+                        </span>
+                    </div>
+                    <div style="font-weight: 600; margin-top: 0.5rem;">{{ assignment.title }}</div>
+                    {% if assignment.gdrive_link %}
+                    <a href="{{ assignment.gdrive_link }}"
+                        style="font-size: 0.8rem; color: #60a5fa; margin-top: 0.25rem; display: inline-block;">View
+                        Link</a>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <p style="color: var(--text-muted);">No assignments created.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Right Column: Student Submissions -->
+        <div>
+            <div class="card">
+                <h3 style="margin-bottom: 1.5rem;">Student Submissions</h3>
+                {% for sub in submissions %}
+                <div
+                    style="padding: 1rem; background: var(--bg); border-radius: 0.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 600; color: var(--primary);">{{ sub.user.username }}</span>
+                        <span style="font-size: 0.875rem; color: var(--text-muted);">
+                            {{ sub.created_at|date:"M d, Y" }}
+                        </span>
+                    </div>
+
+                    {% if sub.assignment %}
+                    <div style="margin-bottom: 0.5rem; font-size: 0.9rem;">
+                        <span
+                            style="background: var(--surface); padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.75rem;">
+                            {{ sub.assignment.subject }}
+                        </span>
+                        <strong>{{ sub.assignment.title }}</strong>
+                    </div>
+                    {% endif %}
+
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        {% if sub.gdrive_link %}
+                        <a href="{{ sub.gdrive_link }}" style="color: #60a5fa; font-size: 0.9rem;">
+                            <i class="fas fa-external-link-alt"></i> View Submission Link
+                        </a>
+                        {% endif %}
+                        {% if sub.file %}
+                        <a href="{{ sub.file.url }}" style="color: #60a5fa; font-size: 0.9rem;">
+                            <i class="fas fa-download"></i> Download File
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Upload Checked Copy Form -->
+                    <!-- Upload Checked Copy Form -->
+                    <form action="{% url 'upload_checked_copy' sub.id %}" method="post" enctype="multipart/form-data"
+                        style="background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 0.5rem;">
+                        {% csrf_token %}
+                        <div style="margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 600;">Upload Checked Copy
+                        </div>
+
+                        {% if sub.checked_file %}
+                        <div style="margin-bottom: 0.5rem; color: #10b981; font-size: 0.8rem;">
+                            <i class="fas fa-check-circle"></i> File uploaded
+                        </div>
+                        {% endif %}
+                        {% if sub.checked_gdrive_link %}
+                        <div style="margin-bottom: 0.5rem; color: #10b981; font-size: 0.8rem;">
+                            <i class="fas fa-check-circle"></i> Link added
+                        </div>
+                        {% endif %}
+
+                        <!-- Collapsible Upload Section -->
+                        <details {% if not sub.checked_gdrive_link %}open{% endif %}
+                            style="margin-bottom: 0.5rem; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.5rem;">
+                            <summary
+                                style="cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--primary); outline: none;">
+                                {% if sub.checked_gdrive_link %}
+                                Edit Link / Re-upload
+                                {% else %}
+                                Add Checked Copy
+                                {% endif %}
+                            </summary>
+
+                            <div style="margin-top: 0.75rem;">
+                                <!-- Step 1: Upload to Drive -->
+                                <div class="form-group"
+                                    style="margin-bottom: 0.5rem; background: var(--bg); padding: 0.5rem; border-radius: 0.25rem;">
+                                    <a href="https://drive.google.com/drive/u/0/folders/1jIkKuoB_cmsPrRGBXjAmfGb5HN8PIIZM"
+                                        style="color: #fbbc04; font-size: 0.8rem; text-decoration: none; font-weight: 600;">
+                                        <i class="fab fa-google-drive"></i> Step 1: Upload Checked Copy
+                                    </a>
+                                </div>
+
+                                <!-- Step 2: Paste Link -->
+                                <div class="form-group" style="margin-bottom: 0.5rem;">
+                                    <input type="url" name="checked_gdrive_link" placeholder="Step 2: Paste Link"
+                                        value="{{ sub.checked_gdrive_link|default:'' }}"
+                                        style="padding: 0.25rem; font-size: 0.8rem; width: 100%;">
+                                </div>
+
+                                <!-- Direct File Upload (Optional) -->
+                                <div class="form-group" style="margin-bottom: 0px;">
+                                    <label style="font-size: 0.75rem;">Or File:</label>
+                                    <input type="file" name="checked_file" style="padding: 0.25rem; font-size: 0.8rem;">
+                                </div>
+                            </div>
+                        </details>
+
+                        <div class="form-group" style="margin-bottom: 0.5rem;">
+                            <input type="text" name="remarks" placeholder="Remarks (Optional)"
+                                value="{{ sub.remarks|default:'' }}"
+                                style="padding: 0.5rem; width: 100%; font-size: 0.8rem; background: var(--bg); border: 1px solid var(--border); color: var(--text);">
+                        </div>
+                        <button type="submit" class="btn"
+                            style="background: var(--primary); color: white; padding: 0.25rem 0.75rem; font-size: 0.8rem;">
+                            Save Feedback
+                        </button>
+                    </form>
+                </div>
+                {% empty %}
+                <p style="color: var(--text-muted);">No submissions yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div id="intro-overlay">
+    <canvas id="intro-canvas"></canvas>
+</div>
+<script src="{% static 'js/intro.js' %}"></script>
+
+<div class="auth-container">
+    <div class="card">
+        <h2 class="auth-title">Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                    {{ field.errors|striptags }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+        </form>
+        <p style="text-align: center; margin-top: 1.5rem; color: var(--text-muted);">
+            Don't have an account? <a href="{% url 'signup' %}" style="color: var(--primary);">Sign up</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
