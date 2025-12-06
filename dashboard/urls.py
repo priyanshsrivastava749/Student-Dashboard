@@ -11,5 +11,6 @@ urlpatterns = [
     path('ask-doubt/', views.ask_doubt, name='ask_doubt'),
     path('create-assignment/', views.create_assignment, name='create_assignment'),
     path('upload-checked-copy/<int:homework_id>/', views.upload_checked_copy, name='upload_checked_copy'),
+    path('delete-assignment/<int:assignment_id>/', views.delete_assignment, name='delete_assignment'),
 ]
 # Touch

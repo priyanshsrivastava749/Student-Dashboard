@@ -63,6 +63,18 @@ def create_assignment(request):
     return redirect('dashboard')
 
 @login_required
+def delete_assignment(request, assignment_id):
+    if not request.user.studentprofile.is_teacher:
+        return redirect('dashboard')
+        
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    if assignment.created_by == request.user:
+        assignment.delete()
+        messages.success(request, 'Assignment deleted successfully!')
+    
+    return redirect('dashboard')
+
+@login_required
 def submit_homework(request):
     if request.method == 'POST':
         file = request.FILES.get('file')
