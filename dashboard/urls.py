@@ -12,5 +12,8 @@ urlpatterns = [
     path('create-assignment/', views.create_assignment, name='create_assignment'),
     path('upload-checked-copy/<int:homework_id>/', views.upload_checked_copy, name='upload_checked_copy'),
     path('delete-assignment/<int:assignment_id>/', views.delete_assignment, name='delete_assignment'),
+    path('submit-chapter/', views.submit_chapter, name='submit_chapter'),
+    path('my-chapters/', views.student_chapters, name='student_chapters'),
+    path('review-chapters/', views.teacher_chapters, name='teacher_chapters'),
 ]
 # Touch

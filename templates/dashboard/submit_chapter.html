@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin-top: 2rem;">
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem; text-align: center;">Upload Chapter</h2>
+
+        <form method="post" action="{% url 'submit_chapter' %}">
+            {% csrf_token %}
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="{{ form.subject.id_for_label }}">Subject</label>
+                {{ form.subject }}
+                {{ form.subject.errors }}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="{{ form.chapter_name.id_for_label }}">Chapter Name</label>
+                {{ form.chapter_name }}
+                {{ form.chapter_name.errors }}
+            </div>
+
+            <!-- Drive Upload Instructions -->
+            <div class="form-group"
+                style="margin-bottom: 1.5rem; background: var(--bg); padding: 1rem; border-radius: 0.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Step 1: Upload to Google
+                    Drive</label>
+                <a href="https://drive.google.com/drive/u/0/" target="_blank" class="btn"
+                    style="background-color: #fbbc04; color: #000; text-decoration: none; display: inline-block; padding: 0.5rem 1rem; border-radius: 0.25rem;">
+                    <i class="fab fa-google-drive"></i> Open Google Drive
+                </a>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    Create a folder for this chapter, upload your PDF/Images, and copy the link (Share > Anyone with
+                    link).
+                </p>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="{{ form.student_drive_link.id_for_label }}">Step 2: Paste Drive Link</label>
+                {{ form.student_drive_link }}
+                {{ form.student_drive_link.errors }}
+                <small style="color: var(--text-muted);">Paste the link you copied from Google Drive here.</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Chapter</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

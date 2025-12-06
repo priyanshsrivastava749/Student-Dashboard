@@ -3,7 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Homework, Doubt, Assignment, StudentProfile
+from .models import Homework, Doubt, Assignment, StudentProfile, ChapterSubmission
+from .forms import ChapterSubmissionForm, TeacherResponseForm
 
 def signup_view(request):
     if request.method == 'POST':
@@ -140,3 +141,46 @@ def ask_doubt(request):
             messages.success(request, 'Doubt submitted successfully!')
             
     return redirect('dashboard')
+
+@login_required
+def submit_chapter(request):
+    if request.method == 'POST':
+        form = ChapterSubmissionForm(request.POST)
+        if form.is_valid():
+            chapter = form.save(commit=False)
+            chapter.student = request.user
+            chapter.save()
+            messages.success(request, 'Chapter submitted successfully!')
+            return redirect('student_chapters')
+    else:
+        form = ChapterSubmissionForm()
+    return render(request, 'dashboard/submit_chapter.html', {'form': form})
+
+@login_required
+def student_chapters(request):
+    chapters = ChapterSubmission.objects.filter(student=request.user).order_by('-created_at')
+    return render(request, 'dashboard/student_chapters.html', {'chapters': chapters})
+
+@login_required
+def teacher_chapters(request):
+    # Ensure user is a teacher
+    if not hasattr(request.user, 'studentprofile') or not request.user.studentprofile.is_teacher:
+         return redirect('dashboard')
+    
+    pending_chapters = ChapterSubmission.objects.filter(is_completed=False).order_by('created_at')
+    completed_chapters = ChapterSubmission.objects.filter(is_completed=True).order_by('-created_at')
+    
+    if request.method == 'POST':
+        chapter_id = request.POST.get('chapter_id')
+        response_link = request.POST.get('teacher_notes_link')
+        if chapter_id and response_link:
+            chapter = get_object_or_404(ChapterSubmission, id=chapter_id)
+            chapter.teacher_notes_link = response_link
+            chapter.save()
+            messages.success(request, 'Response sent to student!')
+            return redirect('teacher_chapters')
+
+    return render(request, 'dashboard/teacher_chapters.html', {
+        'pending_chapters': pending_chapters, 
+        'completed_chapters': completed_chapters
+    })

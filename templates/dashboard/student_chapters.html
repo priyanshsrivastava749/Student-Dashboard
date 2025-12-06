@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>My Chapter Submissions</h1>
+        <a href="{% url 'submit_chapter' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Upload New
+        </a>
+    </div>
+
+    {% if chapters %}
+    {% for chapter in chapters %}
+    <div class="card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <span
+                    style="background: var(--surface); color: var(--text-muted); padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600; border: 1px solid var(--border);">
+                    {{ chapter.subject }}
+                </span>
+                <h3 style="margin: 0.5rem 0;">{{ chapter.chapter_name }}</h3>
+                <div style="font-size: 0.875rem; color: var(--text-muted);">
+                    Submitted: {{ chapter.created_at|date:"M d, Y" }}
+                </div>
+            </div>
+
+            <div>
+                <!-- Status Badge -->
+                {% if chapter.is_completed %}
+                <span
+                    style="background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.85rem; font-weight: 600;">
+                    Completed
+                </span>
+                {% else %}
+                <span
+                    style="background: rgba(251, 188, 4, 0.2); color: #fbbc04; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.85rem; font-weight: 600;">
+                    Awaiting Response
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div
+            style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="{{ chapter.student_drive_link }}" target="_blank" class="btn"
+                style="background: var(--surface); color: var(--text); padding: 0.5rem; text-decoration: none; border: 1px solid var(--border);">
+                <i class="fab fa-google-drive"></i> Your Upload
+            </a>
+
+            {% if chapter.teacher_notes_link %}
+            <a href="{{ chapter.teacher_notes_link }}" target="_blank" class="btn"
+                style="background: #10b981; color: white; padding: 0.5rem; text-decoration: none;">
+                <i class="fas fa-check-circle"></i> View Teachers Notes
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="card" style="text-align: center; padding: 3rem;">
+        <p style="color: var(--text-muted);">You haven't uploaded any chapters yet.</p>
+        <a href="{% url 'submit_chapter' %}" class="btn btn-primary" style="margin-top: 1rem;">Upload Your First
+            Chapter</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

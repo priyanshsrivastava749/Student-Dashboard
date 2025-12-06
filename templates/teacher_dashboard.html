@@ -25,6 +25,14 @@
     <div class="dashboard-grid">
         <!-- Left Column: Create & View Assignments -->
         <div>
+            <!-- Quick Actions -->
+            <div style="margin-bottom: 2rem;">
+                <a href="{% url 'teacher_chapters' %}" class="btn"
+                    style="width: 100%; text-align: center; background: #fbbc04; color: black; font-weight: 700; padding: 1rem;">
+                    <i class="fas fa-check-double"></i> Review Student Chapter Submissions
+                </a>
+            </div>
+
             <!-- Create Assignment Form -->
             <div class="card" style="margin-bottom: 2rem; border-color: var(--primary);">
                 <h3 style="margin-bottom: 1.5rem;">Create New Assignment</h3>

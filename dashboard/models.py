@@ -45,6 +45,25 @@ class StudentProfile(models.Model):
     def __str__(self):
         return f"{self.user.username}'s Profile"
 
+class ChapterSubmission(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chapter_submissions')
+    subject = models.CharField(max_length=100)
+    chapter_name = models.CharField(max_length=200)
+    student_drive_link = models.URLField(help_text="Google Drive link for the chapter PDF/Folder")
+    teacher_notes_link = models.URLField(blank=True, null=True, help_text="Google Drive link for the checked notes")
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_completed = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.teacher_notes_link:
+            self.is_completed = True
+        else:
+            self.is_completed = False
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.subject} - {self.chapter_name} ({self.student.username})"
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 

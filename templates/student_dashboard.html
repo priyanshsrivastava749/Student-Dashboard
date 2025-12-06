@@ -25,13 +25,20 @@
         <!-- Assignments List -->
         <div>
             <!-- Top Action Bar for Student -->
-            <div style="margin-bottom: 2rem;">
+            <div style="margin-bottom: 2rem; display: flex; gap: 1rem;">
                 <a href="https://actually-fibula-87f.notion.site/Tutor-Dashboard-Raisha-Class-IX-Syllabus-2ae7e689282b80039affd202d3e33c42?pvs=74"
                     class="card"
-                    style="text-align: center; transition: transform 0.2s; cursor: pointer; display: block; text-decoration: none; color: inherit; background: var(--surface); border: 1px solid var(--border);">
+                    style="flex: 1; text-align: center; transition: transform 0.2s; cursor: pointer; display: block; text-decoration: none; color: inherit; background: var(--surface); border: 1px solid var(--border);">
                     <h3 style="margin-bottom: 0.5rem; color: var(--primary);">View Subjects</h3>
                     <p style="color: var(--text-muted); margin: 0;">Access your study materials <i
                             class="fas fa-external-link-alt"></i></p>
+                </a>
+
+                <a href="{% url 'student_chapters' %}" class="card"
+                    style="flex: 1; text-align: center; transition: transform 0.2s; cursor: pointer; display: block; text-decoration: none; color: inherit; background: var(--surface); border: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 0.5rem; color: #fbbc04;">Chapter Uploads</h3>
+                    <p style="color: var(--text-muted); margin: 0;">Submit chapters & Get Notes <i
+                            class="fas fa-upload"></i></p>
                 </a>
             </div>
 
@@ -45,8 +52,15 @@
                             {{ assignment.subject }}
                         </span>
                         <h3 style="margin-bottom: 0.25rem;">{{ assignment.title }}</h3>
-                        <p style="color: var(--text-muted); font-size: 0.9rem;">Due: {{ assignment.due_date|default:"No
-                            Date" }}</p>
+                        <i class="far fa-calendar-alt"></i>
+                        Due: <span style="font-weight: 500; color: var(--text);">
+                            {% if assignment.due_date %}
+                            {{ assignment.due_date|date:"M d, Y" }}
+                            {% else %}
+                            No Date
+                            {% endif %}
+                        </span>
+                        </p>
                     </div>
                     <div style="display: flex; gap: 0.5rem;">
                         {% if assignment.gdrive_link %}

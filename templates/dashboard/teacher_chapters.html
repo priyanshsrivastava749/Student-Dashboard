@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; margin-top: 2rem;">
+    <h1 style="margin-bottom: 2rem;">Review Chapter Submissions</h1>
+
+    <div class="dashboard-grid" style="grid-template-columns: 1fr; gap: 2rem;">
+
+        <!-- Pending Reviews -->
+        <div>
+            <h2 style="margin-bottom: 1rem; color: #fbbc04;">Pending Review ({{ pending_chapters.count }})</h2>
+            {% for chapter in pending_chapters %}
+            <div class="card" style="margin-bottom: 1.5rem; border-left: 4px solid #fbbc04;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                    <div>
+                        <h3 style="margin: 0;">{{ chapter.chapter_name }}</h3>
+                        <p style="color: var(--primary); font-weight: 600; margin: 0.25rem 0;">{{ chapter.subject }}</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">
+                            Student: {{ chapter.student.username }} | Date: {{ chapter.created_at|date:"M d, Y" }}
+                        </p>
+                    </div>
+                    <a href="{{ chapter.student_drive_link }}" target="_blank" class="btn"
+                        style="background: var(--surface); border: 1px solid var(--border);">
+                        <i class="fab fa-google-drive"></i> View Student Work
+                    </a>
+                </div>
+
+                <form method="post" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    {% csrf_token %}
+                    <input type="hidden" name="chapter_id" value="{{ chapter.id }}">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem;">Provide
+                        Notes Link (Drive):</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="url" name="teacher_notes_link" placeholder="https://drive.google.com/..."
+                            class="form-control" required style="flex: 1;">
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </div>
+                </form>
+            </div>
+            {% empty %}
+            <p style="color: var(--text-muted);">No pending submissions.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Completed Reviews -->
+        <div>
+            <h2 style="margin-bottom: 1rem; color: #10b981;">Completed History</h2>
+            {% for chapter in completed_chapters %}
+            <div class="card" style="margin-bottom: 1rem; opacity: 0.8;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>{{ chapter.chapter_name }}</strong> ({{ chapter.subject }})
+                        <br>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Student: {{ chapter.student.username
+                            }}</span>
+                    </div>
+                    <div>
+                        <a href="{{ chapter.teacher_notes_link }}" target="_blank"
+                            style="color: #10b981; text-decoration: none; margin-left: 1rem;">
+                            <i class="fas fa-check-circle"></i> Notes Sent
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color: var(--text-muted);">No completed history.</p>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}
