@@ -81,6 +81,27 @@ DATABASES = {
     }
 }
 
+# Vercel-specific: Copy DB to /tmp to allow writes (ephemeral)
+if 'VERCEL' in os.environ or os.environ.get('VERCEL_REGION'):
+    import shutil
+    
+    # Define temp DB path
+    TEMP_DB = Path('/tmp/db.sqlite3')
+    
+    # Original DB path (from repo)
+    ORIG_DB = BASE_DIR / 'db.sqlite3'
+    
+    # Always copy fresh on startup/import (checking existence isn't enough as it might be stale or partial)
+    if ORIG_DB.exists():
+        if not TEMP_DB.exists(): # Only copy if not already there in this lambda instance
+            try:
+                shutil.copyfile(ORIG_DB, TEMP_DB)
+            except Exception as e:
+                print(f"Error copying DB to /tmp: {e}")
+    
+    # Point Django to the writable /tmp database
+    DATABASES['default']['NAME'] = TEMP_DB
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
