@@ -66,6 +66,22 @@
                         <span style="font-size: 0.8rem; color: var(--text-muted);">Student: {{ chapter.student.username
                             }}</span>
                     </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <a href="{{ chapter.teacher_notes_link }}" target="_blank"
+                            style="color: #10b981; text-decoration: none; margin-left: 1rem;">
+                            <i class="fas fa-check-circle"></i> Notes Sent
+                        </a>
+                        <!-- Delete Form -->
+                        <form action="{% url 'delete_chapter_submission' chapter.id %}" method="post"
+                            onsubmit="return confirm('Are you sure you want to delete this submission?');"
+                            style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn"
+                                style="background: #ef4444; color: white; padding: 0.25rem 0.5rem; font-size: 0.8rem;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
