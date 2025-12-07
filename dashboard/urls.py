@@ -15,5 +15,6 @@ urlpatterns = [
     path('submit-chapter/', views.submit_chapter, name='submit_chapter'),
     path('my-chapters/', views.student_chapters, name='student_chapters'),
     path('review-chapters/', views.teacher_chapters, name='teacher_chapters'),
+    path('delete-chapter/<int:chapter_id>/', views.delete_chapter_submission, name='delete_chapter_submission'),
 ]
 # Touch

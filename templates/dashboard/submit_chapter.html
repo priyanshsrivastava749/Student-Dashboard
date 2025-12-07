@@ -15,6 +15,12 @@
             </div>
 
             <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="{{ form.chapter_name.id_for_label }}">Chapter Name</label>
+                {{ form.chapter_name }}
+                {{ form.chapter_name.errors }}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label>Step 1: Upload to Drive</label>
                 <p style="color: var(--text-muted); font-size: 0.9em; margin-bottom: 0.5rem;">
                     First, upload your files to the shared Google Drive folder:

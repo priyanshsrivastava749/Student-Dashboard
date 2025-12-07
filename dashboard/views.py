@@ -184,3 +184,14 @@ def teacher_chapters(request):
         'pending_chapters': pending_chapters, 
         'completed_chapters': completed_chapters
     })
+
+@login_required
+def delete_chapter_submission(request, chapter_id):
+    # Ensure user is a teacher
+    if not hasattr(request.user, 'studentprofile') or not request.user.studentprofile.is_teacher:
+         return redirect('dashboard')
+    
+    chapter = get_object_or_404(ChapterSubmission, id=chapter_id)
+    chapter.delete()
+    messages.success(request, 'Chapter submission deleted.')
+    return redirect('teacher_chapters')

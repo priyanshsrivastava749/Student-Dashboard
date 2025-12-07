@@ -19,10 +19,7 @@
                             Student: {{ chapter.student.username }} | Date: {{ chapter.created_at|date:"M d, Y" }}
                         </p>
                     </div>
-                    <a href="{{ chapter.student_drive_link }}" target="_blank" class="btn"
-                        style="background: var(--surface); border: 1px solid var(--border);">
-                        <i class="fab fa-google-drive"></i> View Student Work
-                    </a>
+
                 </div>
 
                 <form method="post" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
@@ -54,19 +51,14 @@
                         <span style="font-size: 0.8rem; color: var(--text-muted);">Student: {{ chapter.student.username
                             }}</span>
                     </div>
-                    <div>
-                        <a href="{{ chapter.teacher_notes_link }}" target="_blank"
-                            style="color: #10b981; text-decoration: none; margin-left: 1rem;">
-                            <i class="fas fa-check-circle"></i> Notes Sent
-                        </a>
-                    </div>
                 </div>
             </div>
-            {% empty %}
-            <p style="color: var(--text-muted);">No completed history.</p>
-            {% endfor %}
         </div>
-
+        {% empty %}
+        <p style="color: var(--text-muted);">No completed history.</p>
+        {% endfor %}
     </div>
+
+</div>
 </div>
 {% endblock %}
