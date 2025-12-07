@@ -20,6 +20,21 @@
                         </p>
                     </div>
 
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <a href="{{ chapter.student_drive_link }}" target="_blank" class="btn"
+                            style="background: var(--surface); border: 1px solid var(--border);">
+                            <i class="fab fa-google-drive"></i> View Student Work
+                        </a>
+                        <!-- Delete Form -->
+                        <form action="{% url 'delete_chapter_submission' chapter.id %}" method="post"
+                            onsubmit="return confirm('Are you sure you want to delete this submission?');"
+                            style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn" style="background: #ef4444; color: white;">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 <form method="post" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
